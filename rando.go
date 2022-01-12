@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"math/rand"
 	"os"
+	"rando/characters"
 	"time"
 )
 
@@ -16,18 +16,25 @@ func check(e error) {
 }
 
 func main() {
-	seed := flag.Int64("seed", 0, "an integer to seed the process with")
-	flag.Parse()
 
-	var s int64
-	if *seed == 0 {
-		s = time.Now().UnixNano()
-	} else {
-		s = *seed
+	charCmd := flag.NewFlagSet("character", flag.ExitOnError)
+	charSeed := charCmd.Int64("seed", 0, "an integer to regenerate a character from")
+
+	if len(os.Args) < 2 {
+		println("Expected a subcommand.")
+		os.Exit(1)
 	}
 
-	r := rand.New(rand.NewSource(s))
+	switch os.Args[1] {
+	case "character":
+		charCmd.Parse(os.Args[2:])
+		var seed int64
+		if *charSeed == 0 {
+			seed = time.Now().UnixNano()
+		} else {
+			seed = *charSeed
+		}
 
-	fmt.Println(s)
-	fmt.Println(r.Int())
+		characters.GenerateCharacter(seed)
+	}
 }
