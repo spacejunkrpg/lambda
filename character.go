@@ -1,9 +1,17 @@
-package characters
+package main
 
 import (
+	"context"
 	"encoding/json"
 	"math/rand"
+	"time"
+
+	"github.com/aws/aws-lambda-go/lambda"
 )
+
+type Seed struct {
+	Seed int64 `json:"seed"`
+}
 
 type Character struct {
 	Seed        int    `json:"seed"`
@@ -321,4 +329,18 @@ func GenerateCharacter(seed int64) []byte {
 	}
 
 	return j
+}
+
+func HandleRequest(ctx context.Context, seed Seed) ([]byte, error) {
+	var s int64
+	if seed.Seed == 0 {
+		s = time.Now().UnixNano()
+	} else {
+		s = seed.Seed
+	}
+	return GenerateCharacter(s), nil
+}
+
+func main() {
+	lambda.Start(HandleRequest)
 }
