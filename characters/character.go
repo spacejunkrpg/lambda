@@ -13,6 +13,7 @@ type Character struct {
 	Profession  string `json:"profession"`
 	Personality string `json:"personality"`
 	Motivation  string `json:"motivation"`
+	Attitude    string `json:"attitude"`
 }
 
 func rollDice(x int) int {
@@ -284,6 +285,19 @@ func chooseMotivation(profession string, roll int) string {
 	return m[roll]
 }
 
+func chooseAttitude(roll int) string {
+	m := map[int]string{
+		1: "Friendly",
+		2: "Neutral",
+		3: "Neutral",
+		4: "Neutral",
+		5: "Neutral",
+		6: "Hostile",
+	}
+
+	return m[roll]
+}
+
 func GenerateCharacter(seed int64) {
 	rand.Seed(seed)
 	c := Character{}
@@ -295,6 +309,8 @@ func GenerateCharacter(seed int64) {
 
 	c.Profession = chooseProfession(rollDice(2))
 	c.Motivation = chooseMotivation(c.Profession, rollDice(1))
+
+	c.Attitude = chooseAttitude(rollDice(1))
 
 	j, _ := json.Marshal(c)
 	fmt.Println(string(j))
