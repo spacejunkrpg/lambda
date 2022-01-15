@@ -2,7 +2,6 @@ package characters
 
 import (
 	"encoding/json"
-	"fmt"
 	"math/rand"
 )
 
@@ -191,7 +190,9 @@ func choosePersonality(rollOpen int, rollCon int, rollExtra int, rollAgree int, 
 
 	stability := s[rollStability]
 
-	return open + ", " + con + ", " + extra + ", " + agree + ", " + stability
+	sp := ", "
+
+	return open + sp + con + sp + extra + sp + agree + sp + stability
 
 }
 
@@ -298,7 +299,7 @@ func chooseAttitude(roll int) string {
 	return m[roll]
 }
 
-func GenerateCharacter(seed int64) {
+func GenerateCharacter(seed int64) []byte {
 	rand.Seed(seed)
 	c := Character{}
 	c.Seed = int(seed)
@@ -312,6 +313,12 @@ func GenerateCharacter(seed int64) {
 
 	c.Attitude = chooseAttitude(rollDice(1))
 
-	j, _ := json.Marshal(c)
-	fmt.Println(string(j))
+	j, err := json.Marshal(c)
+
+	if err != nil {
+		return []byte(err.Error())
+
+	}
+
+	return j
 }

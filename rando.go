@@ -1,40 +1,27 @@
 package main
 
 import (
-	"flag"
-	"fmt"
-	"os"
+	"context"
 	"rando/characters"
 	"time"
+
+	"github.com/aws/aws-lambda-go/lambda"
 )
 
-func check(e error) {
-	if e != nil {
-		fmt.Printf("The operation failed with the following error: %s\n", e)
-		os.Exit(1)
+type Seed struct {
+	Seed int64 `json:"seed"`
+}
+
+func HandleRequest(ctx context.Context, seed Seed) ([]byte, error) {
+	var s int64
+	if seed.Seed == 0 {
+		s = time.Now().UnixNano()
+	} else {
+		s = seed.Seed
 	}
+	return characters.GenerateCharacter(s), nil
 }
 
 func main() {
-
-	charCmd := flag.NewFlagSet("character", flag.ExitOnError)
-	charSeed := charCmd.Int64("seed", 0, "an integer to regenerate a character from")
-
-	if len(os.Args) < 2 {
-		println("Expected a subcommand.")
-		os.Exit(1)
-	}
-
-	switch os.Args[1] {
-	case "character":
-		charCmd.Parse(os.Args[2:])
-		var seed int64
-		if *charSeed == 0 {
-			seed = time.Now().UnixNano()
-		} else {
-			seed = *charSeed
-		}
-
-		characters.GenerateCharacter(seed)
-	}
+	lambda.Start(HandleRequest)
 }
