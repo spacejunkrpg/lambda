@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"testing"
 )
 
@@ -71,16 +70,4 @@ func TestChooseAttitude(t *testing.T) {
 	if attitude != "Neutral" {
 		t.Errorf("chooseAttitude(2) = %s; want 'Neutral'", attitude)
 	}
-}
-
-func TestGenerateCharacter(t *testing.T) {
-	j := GenerateCharacter(1642211868225597000)
-
-	var c Character
-	err := json.Unmarshal(j, &c)
-
-	if err != nil {
-		t.Errorf("unable to parse JSON response")
-	}
-
 }

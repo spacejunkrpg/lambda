@@ -2,15 +2,21 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"math/rand"
 	"time"
+	"encoding/json"
 
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
 type Seed struct {
 	Seed int64 `json:"seed"`
+}
+
+type Response struct {
+	StatusCode int `json:"statusCode"`
+	Base64 bool `json:"isBase64Encoded"`
+	Body string `json:"body"`
 }
 
 type Character struct {
@@ -307,7 +313,7 @@ func chooseAttitude(roll int) string {
 	return m[roll]
 }
 
-func GenerateCharacter(seed int64) []byte {
+func GenerateCharacter(seed int64) Character {
 	rand.Seed(seed)
 	c := Character{}
 	c.Seed = int(seed)
@@ -321,24 +327,25 @@ func GenerateCharacter(seed int64) []byte {
 
 	c.Attitude = chooseAttitude(rollDice(1))
 
-	j, err := json.Marshal(c)
-
-	if err != nil {
-		return []byte(err.Error())
-
-	}
-
-	return j
+	return c
 }
 
-func HandleRequest(ctx context.Context, seed Seed) ([]byte, error) {
+func HandleRequest(ctx context.Context, seed Seed) (Response, error) {
 	var s int64
 	if seed.Seed == 0 {
 		s = time.Now().UnixNano()
 	} else {
 		s = seed.Seed
 	}
-	return GenerateCharacter(s), nil
+
+	r := Response{}
+	c := GenerateCharacter(s)
+	j, _ := json.Marshal(c)
+	r.Body = string(j)
+	r.Base64 = false
+	r.StatusCode = 200
+
+	return r, nil
 }
 
 func main() {
