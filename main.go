@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"strconv"
 	"time"
 
 	"github.com/aws/aws-lambda-go/lambda"
@@ -10,7 +11,7 @@ import (
 )
 
 type Seed struct {
-	Seed int64 `json:"seed"`
+	Seed string `json:"seed"`
 }
 
 type Response struct {
@@ -21,10 +22,11 @@ type Response struct {
 
 func HandleRequest(ctx context.Context, seed Seed) (Response, error) {
 	var s int64
-	if seed.Seed == 0 {
+
+	if seed.Seed == "" {
 		s = time.Now().UnixNano()
 	} else {
-		s = seed.Seed
+		s, _ = strconv.ParseInt(seed.Seed, 10, 64)
 	}
 
 	r := Response{}

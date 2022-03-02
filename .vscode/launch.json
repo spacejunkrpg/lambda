@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "type": "aws-sam",
+            "request": "direct-invoke",
+            "name": "lambda:lambda (go1.x)",
+            "invokeTarget": {
+                "target": "code",
+                "projectRoot": "${workspaceFolder}/",
+                "lambdaHandler": "lambda"
+            },
+            "lambda": {
+                "runtime": "go1.x",
+                "payload": {},
+                "environmentVariables": {}
+            }
+        }
+    ]
+}
